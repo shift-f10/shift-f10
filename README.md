@@ -11,7 +11,11 @@ This script outputs to an html file to easily view the data.  In addition, mappi
 
 Must run the files with admin privs since security log requires admin.
 
+Samples now available, however, for local sample you will need to get the two files listed below. 
+
 Issues:
 - Must be online to view the Chart as Google's license does not allow use of their API offline
 - Must use Edge (No need for enabling Active-X) or IE to view file and allow content, Chrome for some reason has some settings to trust local files, I still need to look into that
 - Offline visualization can still act finicky, sometimes you have to lower the number of searches to 10, then increase it.
+- You will need vis.js and vis-network.min.css in the same folder as the output html file.  You can get these files in the following repository: https://github.com/almende/vis/tree/master/dist
+
