@@ -1,3 +1,5 @@
+
+<h3>Online Visualization using Google Chart</h3>
 <image src="https://raw.githubusercontent.com/shift-f10/shift-f10/master/screenshot1.jpg">
 
 Tracking down processes can sometimes take a long time and eventually, you will reach a dead end and you need to dig in the event-log to find processes with event id 4688.  Get-psEventLog.ps1 helps automate the process by parsing the relevant information.  It also converts the process IDs from hex to decimal to easily correlate with most utilities such as tasklist, etc.  It also checks to see if the process is currently running and check the AppID in the commandline (in the case of dllhost.exe) and bumps it against the registry to find the application name.
