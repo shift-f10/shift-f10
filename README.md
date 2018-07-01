@@ -14,3 +14,4 @@ Must run the files with admin privs since security log requires admin.
 Issues:
 - Must be online to view the Chart as Google's license does not allow use of their API offline
 - Must use Edge (No need for enabling Active-X) or IE to view file and allow content, Chrome for some reason has some settings to trust local files, I still need to look into that
+- Offline visualization can still act finicky, sometimes you have to lower the number of searches to 10, then increase it.
