@@ -21,7 +21,7 @@ function Get-psEventLog {
     # Change or remove the MaxEvents value to the number of items you want to see
     # or change the FilterXPath to a more defined filter
     # for some reason, Google Chart can map 150 events or else the chart fails to load.
-    $logs = Get-WinEvent -LogName Security -FilterXPath "*[System[(EventID=4688)]]" -MaxEvents 150
+    $logs = Get-WinEvent -LogName Security -FilterXPath "*[System[(EventID=4688)]]" -MaxEvents 120
     
     # Initialize the array to store output
     $out = @()
@@ -72,9 +72,15 @@ function Get-psEventLog {
         if ($ProcName -eq "dllhost.exe") {
             [array]$cid = $cmd -split ":"
             $cid2 = $cid[2]
-            $regPath = "HKEY_LOCAL_MACHINE\SOFTWARE\Classes\AppID\$cid2"
-            $paramout = (Get-ItemProperty -Path "Registry::$regPath").'(default)'
-            $ProcName = "dllhost.exe ($paramout)"
+            if ($cid2 -eq "{02D4B3F1-FD88-11D1-960D-00805FC79235}") {
+                $ProcName = "dllhost.exe (COM+ System Application Service)"
+            } else {
+                    $paramout = "dllhost.exe (AppID not in normal path)"
+                    $regPath = "HKEY_LOCAL_MACHINE\SOFTWARE\Classes\AppID\$cid2"
+                    $paramout = (Get-ItemProperty -Path "Registry::$regPath" -ErrorAction SilentlyContinue).'(default)'  
+                    $ProcName = "dllhost.exe ($paramout)"              
+                
+            }
         }
 
 
@@ -94,8 +100,15 @@ function Get-psEventLog {
         <html>
         <head>
         <title>Event Process Tracking for $env:Computername generated on $(get-date)</title>
+            <style>
+                table {border-width: 1px; border-style: solid; border-color: black; border-collapse: collapse;}
+                th {border-width: 1px; padding: 5px; border-style: solid; border-color: black; background-color: #95D8FF;}
+                td {border-width: 1px; padding: 5px; border-style: solid; border-color: black;}
+                div { background-color: white }
+            </style>
             <script type=`"text/javascript`" src=`"https://www.gstatic.com/charts/loader.js`"></script>
             <script type=`"text/javascript`">
+
                 google.charts.load('current', {packages:[`"orgchart`"]});
                 google.charts.setOnLoadCallback(drawChart);
 
@@ -107,15 +120,20 @@ function Get-psEventLog {
                 data.addColumn('string', 'Information');
                 data.addRows([`r`n" 
 
-    foreach ($i in $out)  { $html += "`t`t`t`t`t['$($i.PID)', '$($i.Parent)', '$($i.Process)'],`n" }
+    foreach ($i in $out)  { $html += "`t`t`t`t`t[{v:'$($i.PID)', f:'$($i.PID)<br>$($i.Process)'}, '$($i.Parent)', '$($i.Process)'],`n" }
 
     $html += "`t`t`t`t`t['EventLog Mapper','','Charting Process 4688 history from eventlog.']]);
                 var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
-                chart.draw(data, {allowHtml:true});}
+                chart.draw(data, {
+                    size:'medium',
+                    allowCollapse:true,
+                    allowHtml:true
+                });
+                }
             </script>
         </head>
         <body>
-            <div id=`"chart_div`"></div>`n"
+            <div id=`"chart_div`" ></div>`n"
 
     $htmlfrag = $out | select Date, Time, PID, Process, Running, Domain, User, Parent, ParentProcess, Cmd | ConvertTo-Html -Fragment
 
@@ -132,4 +150,4 @@ function Get-psEventLog {
 #also be aware, Chrome doesn't seem to load the Chart locally, I have not dug into it more but it could be a trust setting
 #as Internet Explorer loads the file, you just have to click Enable Active X content.
 
-Get-psEventLog | Out-File -FilePath "C:\change\path\to\file.htm"
+Get-psEventLog | Out-File -FilePath "C:\Users\pure\Desktop\file.htm"
