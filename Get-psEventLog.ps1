@@ -20,7 +20,7 @@ function Get-psEventLog {
 #>    
     # Change or remove the MaxEvents value to the number of items you want to see
     # or change the FilterXPath to a more defined filter
-    # for some reason, Google Chart can map 150 events or else the chart fails to load.
+    # for some reason, Google Chart can map 120 events or else the chart fails to load.
     $logs = Get-WinEvent -LogName Security -FilterXPath "*[System[(EventID=4688)]]" -MaxEvents 120
     
     # Initialize the array to store output
